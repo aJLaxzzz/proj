@@ -44,11 +44,49 @@ screen = pygame.display.set_mode(DISPLAY_SIZE)
 
 board = Board(40, 40, cell_size=30)
 
-image = pygame.image.load(os.path.join('data', "поле.png")).convert()
+
+tile_width = tile_height = 50
+
+
+
+
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self, tile_type, pos_x, pos_y):
+        super().__init__(tiles_group, all_sprites)
+        self.image = tile_images[tile_type]
+        self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
+
+    def load_level(map):
+        map.txt = "C:\\Users\\Пользователь\\PycharmProjects\\untitled1\\data\\map.txt"
+        with open(map.txt, 'r') as mapFile:
+            level_map = [line.strip() for line in mapFile]
+
+    def load_image(name):
+        fullname = os.path.join('data')
+        tile_images = {'wall': pygame.image.load('tree.jpg'), 'for_towers': pygame.image.load('grass.jpg'),
+                       'road': pygame.image.load('sand.jpg'), 'tron': pygame.image.load('tron.jpg')}
+        tile_images = pygame.image.load(fullname).convert()
+
+    all_sprites = pygame.sprite.Group()
+    tiles_group = pygame.sprite.Group()
+
+    def generate_level(level):
+        x, y = None, None
+        for y in range(len(level)):
+            for x in range(len(level[y])):
+                if level[y][x] == '.':
+                    Tile('for_towers', x, y)
+                elif level[y][x] == '#':
+                    Tile('wall', x, y)
+                elif level[y][x] == '&':
+                    Tile('road', x, y)
+                elif level[y][x] == '%':
+                    Tile('tron', x, y)
+
 
 running = True
 while running:
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -56,7 +94,7 @@ while running:
             board.get_click(event.pos)
 
     screen.fill((0, 0, 0))
-    screen.blit(image, (10, 10))
+    level_x, level_y = generate_level(load_level('map.txt'))
     board.draw(screen)
     pygame.display.flip()
 
