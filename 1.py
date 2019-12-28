@@ -48,7 +48,7 @@ board = Board(40, 40, cell_size=30)
 tile_width = tile_height = 50
 
 
-
+print()
 
 
 class Tile(pygame.sprite.Sprite):
