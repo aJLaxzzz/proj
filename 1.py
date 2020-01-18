@@ -2,9 +2,9 @@ import pygame
 import os
 import glob
 
-DISPLAY_SIZE = (2000, 1000)
+DISPLAY_SIZE = (900, 1000)
 
-TILE_SIZE = 32
+TILE_SIZE = 64
 
 
 class ResourceManager:
@@ -45,7 +45,7 @@ class Tile:
 
 class GameWorld:
 
-    def __init__(self, resourse_manager, x=10, y=10):
+    def __init__(self, resourse_manager, x=50, y=50):
         map = resourse_manager.get_map()
         self._width = len(map[0])
         self._height = len(map)
@@ -66,6 +66,12 @@ class GameWorld:
                     self._board[x][y] = Tile('grass', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
                 elif map[x][y] == '%':
                     self._board[x][y] = Tile('tron', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                elif map[x][y] == '/':
+                    self._board[x][y] = Tile('tower1', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                elif map[x][y] == '|':
+                    self._board[x][y] = Tile('tower2', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                elif map[x][y] == '$':
+                    self._board[x][y] = Tile('tower3', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
                 self._tile_group.add(self._board[x][y].get_sprite())
 
 
