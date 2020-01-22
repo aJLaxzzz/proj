@@ -6,20 +6,26 @@ DISPLAY_SIZE = (900, 1000)
 
 TILE_SIZE = 64
 
+HP = 5
+
 
 class ResourceManager:
 
     def __init__(self):
         self._resources = dict()
         self._map = dict()
+        self._way = dict()
 
     def load_resources(self):
         for path in glob.glob('data/*.jpg'):
             name = path.split('\\')[-1].split('.')[0]
             self._resources[name] = pygame.transform.scale(pygame.image.load(path).convert(), (TILE_SIZE, TILE_SIZE))
 
-        for path in glob.glob('data/*.txt'):
-            name = path.split('\\')[-1]
+        for path in glob.glob('data/way.txt'):
+            with open(path, 'r') as mapFile:
+                self._map = [line.strip() for line in mapFile]
+
+        for path in glob.glob('data/map.txt'):
             with open(path, 'r') as mapFile:
                 self._map = [line.strip() for line in mapFile]
 
@@ -28,6 +34,21 @@ class ResourceManager:
 
     def get_map(self):
         return self._map
+
+    def get_way(self):
+        return self._way
+
+
+class Enemies:
+
+    def __init__(self, resource_manager):
+        way = resource_manager.get_way()
+        map = resource_manager.get_map()
+        self._width = len(map[0])
+        self._height = len(map)
+        self._board = [[None for i in range(self._width)] for _ in range(self._height)]
+        for i in range(len(way), 2):
+            self._board[i][i+1] = Tile('enemy', i * TILE_SIZE, (i+1) * TILE_SIZE, resource_manager)
 
 
 class Tile:
@@ -45,8 +66,8 @@ class Tile:
 
 class GameWorld:
 
-    def __init__(self, resourse_manager, x=50, y=50):
-        map = resourse_manager.get_map()
+    def __init__(self, resource_manager, x=50, y=50):
+        map = resource_manager.get_map()
         self._width = len(map[0])
         self._height = len(map)
         self._x = x
@@ -59,21 +80,14 @@ class GameWorld:
         for x in range(self._height):
             for y in range(self._width):
                 if map[x][y] == '.':
-                    self._board[x][y] = Tile('sand', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                    self._board[x][y] = Tile('sand', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 elif map[x][y] == '#':
-                    self._board[x][y] = Tile('tree', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                    self._board[x][y] = Tile('tree', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 elif map[x][y] == '&':
-                    self._board[x][y] = Tile('grass', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                    self._board[x][y] = Tile('grass', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 elif map[x][y] == '%':
-                    self._board[x][y] = Tile('tron', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
-                elif map[x][y] == '/':
-                    self._board[x][y] = Tile('tower1', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
-                elif map[x][y] == '|':
-                    self._board[x][y] = Tile('tower2', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
-                elif map[x][y] == '$':
-                    self._board[x][y] = Tile('tower3', x * TILE_SIZE, y * TILE_SIZE, resourse_manager)
+                    self._board[x][y] = Tile('tron', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 self._tile_group.add(self._board[x][y].get_sprite())
-
 
     def get_cell(self, mouse_pos):
         mp = (mouse_pos[0] - self._x, mouse_pos[1] - self._y)
