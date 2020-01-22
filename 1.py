@@ -8,7 +8,9 @@ DISPLAY_SIZE = (900, 1000)
 TILE_SIZE = 64
 
 HP = 50
-
+MONEY = 400
+SCORE = 0
+ENEMIES = 0
 
 class ResourceManager:
 
