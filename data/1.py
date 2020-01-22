@@ -2,7 +2,7 @@ import pygame
 import os
 import glob
 
-DISPLAY_SIZE = (380, 480)
+DISPLAY_SIZE = (832, 480)
 
 TILE_SIZE = 32
 

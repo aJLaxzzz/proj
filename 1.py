@@ -3,7 +3,7 @@ import os
 import glob
 import math
 
-DISPLAY_SIZE = (900, 1000)
+DISPLAY_SIZE = (832, 960)
 
 TILE_SIZE = 64
 
@@ -11,6 +11,7 @@ HP = 50
 MONEY = 400
 SCORE = 0
 ENEMIES = 0
+
 
 class ResourceManager:
 
@@ -26,7 +27,7 @@ class ResourceManager:
 
         for path in glob.glob('data/way.txt'):
             with open(path, 'r') as mapFile:
-                self._map = [line.strip() for line in mapFile]
+                self._way = [line.strip() for line in mapFile]
 
         for path in glob.glob('data/map.txt'):
             with open(path, 'r') as mapFile:
@@ -40,20 +41,6 @@ class ResourceManager:
 
     def get_way(self):
         return self._way
-
-
-class Enemies:
-
-    def __init__(self, resource_manager):
-        way = resource_manager.get_way()
-        map = resource_manager.get_map()
-        self._width = len(map[0])
-        self._height = len(map)
-        self._board = [[None for i in range(self._width)] for _ in range(self._height)]
-        for i in range(len(way), 2):
-            self._board[i][i + 1] = Tile('enemy', i * TILE_SIZE, (i + 1) * TILE_SIZE, resource_manager)
-            self.x = i
-            self.y = i + 1
 
 
 class Tower:
@@ -155,6 +142,21 @@ class GameWorld:
 
     def SelectTower(self):
         pass
+
+
+class Enemies:
+
+    def __init__(self, resource_manager):
+        way = resource_manager.get_way()
+        map = resource_manager.get_map()
+        self._width = len(map[0])
+        self._height = len(map)
+        self._board = [[None for i in range(self._width)] for _ in range(self._height)]
+        for i in range(len(way), 2):
+            self.x = way[i]
+            self.y = way[i+1]
+            self._board[self.x][self.y] = Tile('enemy', i * TILE_SIZE, (i + 1) * TILE_SIZE, resource_manager)
+
 
 
 pygame.init()
