@@ -1,12 +1,13 @@
 import pygame
 import os
 import glob
+import math
 
 DISPLAY_SIZE = (900, 1000)
 
 TILE_SIZE = 64
 
-HP = 5
+HP = 50
 
 
 class ResourceManager:
@@ -48,7 +49,43 @@ class Enemies:
         self._height = len(map)
         self._board = [[None for i in range(self._width)] for _ in range(self._height)]
         for i in range(len(way), 2):
-            self._board[i][i+1] = Tile('enemy', i * TILE_SIZE, (i+1) * TILE_SIZE, resource_manager)
+            self._board[i][i + 1] = Tile('enemy', i * TILE_SIZE, (i + 1) * TILE_SIZE, resource_manager)
+            self.x = i
+            self.y = i + 1
+
+
+class Tower:
+    def __init__(self, shootrange, shootspeed, cost, damage, towertype, x, y):
+        self.shootrange = shootrange
+        self.shootspeed = shootspeed
+        self.cost = cost
+        self.damage = damage
+        self.x = x
+        self.y = y
+        self.target = None
+        self.tower1 = False
+        self.tower2 = False
+        self.tower3 = False
+        self.tower_image = None
+        if towertype == 0:
+            self.tower_image = resource_manager.get_resource('tower1')
+            self.tower1 = True
+        if towertype == 1:
+            self.tower_image = resource_manager.get_resource('tower2')
+            self.tower2 = True
+        if towertype == 2:
+            self.tower_image = resource_manager.get_resource('tower3')
+            self.tower3 = True
+
+
+class Shoot:
+    def __init__(self, speed, distance, x1, x2, y1, y2):
+        self.speed = speed
+        self.X = x1
+        self.Y = y1
+        self.distance = distance
+        self.speedX = x2
+        self.speedY = y2
 
 
 class Tile:
@@ -74,7 +111,7 @@ class GameWorld:
         self._y = y
         self._board = [[None for i in range(self._width)] for _ in range(self._height)]
         self._tile_group = pygame.sprite.Group()
-        map = resourse_manager.get_map()
+        map = resource_manager.get_map()
         self._width = len(map[0])
         self._height = len(map)
         for x in range(self._height):
@@ -87,6 +124,12 @@ class GameWorld:
                     self._board[x][y] = Tile('grass', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 elif map[x][y] == '%':
                     self._board[x][y] = Tile('tron', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
+                elif map[x][y] == '+':
+                    self._board[x][y] = Tile('tower3', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
+                elif map[x][y] == '=':
+                    self._board[x][y] = Tile('tower2', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
+                elif map[x][y] == '-':
+                    self._board[x][y] = Tile('tower1', x * TILE_SIZE, y * TILE_SIZE, resource_manager)
                 self._tile_group.add(self._board[x][y].get_sprite())
 
     def get_cell(self, mouse_pos):
@@ -108,13 +151,15 @@ class GameWorld:
     def draw(self, surf):
         self._tile_group.draw(surf)
 
+    def SelectTower(self):
+        pass
+
 
 pygame.init()
 screen = pygame.display.set_mode(DISPLAY_SIZE)
 resource_manager = ResourceManager()
 resource_manager.load_resources()
 board = GameWorld(resource_manager)
-
 
 running = True
 while running:
